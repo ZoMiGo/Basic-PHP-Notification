@@ -1,0 +1,19 @@
+//@version=5
+indicator("Webhook Example", overlay=true)
+
+rsiLength = input.int(14)
+maLength = input.int(50)
+
+rsi = ta.rsi(close, rsiLength)
+ma = ta.sma(close, maLength)
+
+trend = close > ma ? 1 : close < ma ? -1 : 0
+ma_gap = (close - ma) / ma
+
+// Build JSON payload for the Python webhook
+msg = '{"rsi": ' + str.tostring(rsi, format.percent) +
+      ', "ma_gap": ' + str.tostring(ma_gap) +
+      ', "trend": ' + str.tostring(trend) + '}'
+
+// send alert whenever a bar closes
+alertcondition(barstate.isconfirmed, title="Send to AI", message=msg)
